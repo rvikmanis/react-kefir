@@ -19,8 +19,8 @@
   ],
   "scripts": {
     "test": "BABEL_ENV=test babel-node node_modules/mocha/bin/_mocha -R spec --recursive -r ./test/helpers test/spec",
-    "test:cover": "BABEL_ENV=test babel-node $(npm bin)/isparta cover --report text --report html node_modules/mocha/bin/_mocha -- -R spec --recursive -r ./test/helpers test/spec",
-    "prepublish": "npm run clean && npm run test && npm run build",
+    "test:cover": "BABEL_ENV=test babel-node $(npm bin)/isparta cover --report text --report lcov node_modules/mocha/bin/_mocha -- -R spec --recursive -r ./test/helpers test/spec",
+    "prepublish": "npm run build",
     "postpublish": "npm run clean",
     "build": "node build.js",
     "clean": "rm -rf coverage dist"
