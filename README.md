@@ -23,5 +23,6 @@ function Counter({count, label}) {
 Counter = createConnector(Counter)
 
 let observableCount = Kefir.sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
-React.render(<Counter label="Count" count={observableCount} />, mountPoint)
+ReactDOM.render(<Counter label="Count" count={observableCount} />, mountPoint)
 ```
+  >  [View on JSFiddle](https://jsfiddle.net/rvikmanis/jzhcrxmz/)
