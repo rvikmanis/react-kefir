@@ -1,15 +1,86 @@
 import { Component, createElement } from 'react'
 import { Observable } from 'kefir'
 
+export function createConnector(component) {
+  return class extends Component {
+
+    constructor(...args) {
+      super(...args)
+      this.observables = {}
+      this.updaters = {}
+      this.state = {}
+    }
+
+    componentWillMount() {
+      let state = {}
+
+      each(this.props, (prop, k) => {
+        if (!isObservable(prop)) { state[k] = prop }
+        else { this.observables[k] = prop }
+      })
+
+      this.setState(state)
+
+      each(this.observables, (_, k) =>
+        addUpdater(this, k)
+      )
+    }
+
+    componentWillUnmount() {
+      each(this.updaters, (_, k) =>
+        removeObservable(this, k)
+      )
+    }
+
+    componentWillReceiveProps(nextProps) {
+      let state = {}
+
+      let newProps = select(nextProps, (_, k) =>
+        !this.props.hasOwnProperty(k)
+      )
+
+      let keys = [].concat(
+        Object.keys(this.props),
+        Object.keys(newProps)
+      )
+
+      keys.forEach(k => handlePropChange(this, k, state, nextProps))
+      this.setState(state)
+
+      let pendingObservables = select(this.observables, (_, k) =>
+        !this.updaters.hasOwnProperty(k)
+      )
+
+      each(pendingObservables, (_, k) =>
+        addUpdater(this, k)
+      )
+    }
+
+    render() {
+      return createElement(
+        component,
+        this.state
+      )
+    }
+
+  }
+}
+
 function isObservable(object) {
   return object instanceof Observable
 }
 
-function filterObject(object, predicate) {
+function each(object, cb) {
+  Object.keys(object).forEach(k =>
+    cb(object[k], k, object)
+  )
+}
+
+function select(object, predicate) {
   let clone = {}
-  for (let k in object) if (object.hasOwnProperty(k) && predicate(object[k], k, object)) {
-    clone[k] = object[k]
-  }
+  each(object, (v, k, o) => {
+    if (predicate(v, k, o)) clone[k] = v
+  })
   return clone
 }
 
@@ -29,105 +100,32 @@ function removeObservable(self, key) {
   delete self.observables[key]
 }
 
-export function createConnector(component) {
+function handlePropChange(self, key, state, nextProps) {
+  let prop = self.props[key]
+  let nextProp = nextProps[key]
+  let isObs = isObservable(prop)
+  let isObsNext = isObservable(nextProp)
+  let isNew = prop === undefined
+  let isRemoved = nextProp === undefined
+  let isChanged = !isNew && !isRemoved && nextProp !== prop
 
-  function Connector_(props, context) {
-    Component.call(this, props, context);
-
-    this.observables = {}
-    this.updaters = {}
-    this.state = {}
+  if (!isObs && !isObsNext) {
+    state[key] = nextProp
   }
 
-  Connector_.prototype = Object.create(Component.prototype)
-  Connector_.prototype.constructor = Connector_
-
-  Connector_.prototype.componentWillMount = function componentWillMount() {
-    let state = {}
-
-    for (let k in this.props) {
-      let prop = this.props[k]
-
-      if (!isObservable(prop)) {
-        state[k] = prop
-      }
-      else {
-        this.observables[k] = prop
-      }
-    }
-
-    this.setState(state)
-
-    for (let k in this.observables) {
-      addUpdater(this, k)
+  if (isObs && isObsNext) {
+    if (isChanged) {
+      removeUpdater(self, key)
+      self.observables[key] = nextProp
     }
   }
 
-  Connector_.prototype.componentWillUnmount = function componentWillUnmount() {
-    for (let k in this.updaters) {
-      removeObservable(this, k)
-    }
+  if (isObs && !isObsNext) {
+    removeObservable(self, key)
+    state[key] = nextProp
   }
 
-  Connector_.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
-    let state = {}
-
-    let newProps = filterObject(nextProps, (_, k) =>
-      !this.props.hasOwnProperty(k)
-    )
-
-    let keys = Object.keys(this.props)
-    keys = keys.concat(Object.keys(newProps))
-
-    for (let i = 0, ii = keys.length; i < ii; i++) {
-      let k = keys[i]
-      let prop = this.props[k]
-      let nextProp = nextProps[k]
-      let isObs = isObservable(prop)
-      let isObsNext = isObservable(nextProp)
-      let isNew = prop === void 0
-      let isRemoved = nextProp === void 0
-      let isChanged = !isNew && !isRemoved && nextProp !== prop
-
-      if (!isObs && !isObsNext) {
-        state[k] = nextProp
-      }
-
-      if (isObs && isObsNext) {
-        if (isChanged) {
-          removeUpdater(this, k)
-          this.observables[k] = nextProp
-        }
-      }
-
-      if (isObs && !isObsNext) {
-        removeObservable(this, k)
-        state[k] = nextProp
-      }
-
-      if (!isObs && isObsNext) {
-        this.observables[k] = nextProp
-      }
-    }
-
-    this.setState(state)
-
-    let pendingObservables = filterObject(this.observables, (_, k) =>
-      !this.updaters.hasOwnProperty(k)
-    )
-
-    for (let k in pendingObservables) {
-      addUpdater(this, k)
-    }
+  if (!isObs && isObsNext) {
+    self.observables[key] = nextProp
   }
-
-  Connector_.prototype.render = function render() {
-    return createElement(
-      component,
-      this.state
-    )
-  }
-
-  return Connector_
-
 }
