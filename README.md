@@ -28,4 +28,4 @@ Counter = createConnector(Counter)
 let observableCount = Kefir.sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
 ReactDOM.render(<Counter label="Count" count={observableCount} />, mountPoint)
 ```
-  >  [View on JSFiddle](https://jsfiddle.net/rvikmanis/jzhcrxmz/)
+ * [View on JSFiddle](https://jsfiddle.net/rvikmanis/jzhcrxmz/)
