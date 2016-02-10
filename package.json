@@ -32,16 +32,14 @@
     "codeclimate-test-reporter": "^0.3.1",
     "expect": "^1.13.4",
     "isparta": "^4.0.0",
-    "kefir": "^3.2.0",
     "mocha": "^2.4.2",
     "mock-browser": "^0.91.34",
-    "react": "^0.14.0",
     "react-dom": "^0.14.0",
     "rollup": "^0.25.1",
     "rollup-plugin-babel": "^2.3.9",
     "rollup-plugin-uglify": "^0.1.0"
   },
-  "peerDependencies": {
+  "dependencies": {
     "kefir": "^3.2.0",
     "react": "^0.14.0"
   }
