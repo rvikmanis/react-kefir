@@ -17,15 +17,23 @@ import { createConnector } from 'react-kefir'
 
 Wraps component with a handler for observable props. Connector keeps track of observables' state, passing current values to the wrapped component.
 
-#### Example
+#### Usage
 
 ```js
+import { sequentially } from 'kefir'
+import { createConnector } from 'react-kefir'
+import { render } from 'react-dom'
+
 function Counter({count, label}) {
   return <div>{label}: {count}</div>
 }
-Counter = createConnector(Counter)
 
-let observableCount = Kefir.sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
-ReactDOM.render(<Counter label="Count" count={observableCount} />, mountPoint)
+Counter = createConnector(Counter)
+let observableCount = sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
+
+render(<Counter label="Count" count={observableCount} />, mountPoint)
 ```
+
+###### Example
+
  * [View on JSFiddle](https://jsfiddle.net/rvikmanis/jzhcrxmz/)
