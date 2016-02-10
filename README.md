@@ -9,9 +9,6 @@ Connect Kefir observables to React components
 ```
 npm install --save react-kefir
 ```
-```js
-import { createConnector } from 'react-kefir'
-```
 
 ### `createConnector(component: ReactComponent): ReactComponent`
 
