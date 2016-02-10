@@ -13,11 +13,11 @@ npm install --save react-kefir
 import { createConnector } from 'react-kefir'
 ```
 
-##### `createConnector(component: ReactComponent): ReactComponent`
+### `createConnector(component: ReactComponent): ReactComponent`
 
 Wraps component with a handler for observable props. Connector keeps track of observables' state, passing current values to the wrapped component.
 
-###### Example
+#### Example
 
 ```js
 function Counter({count, label}) {
