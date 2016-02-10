@@ -34,6 +34,6 @@ let observableCount = sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
 render(<Counter label="Count" count={observableCount} />, mountPoint)
 ```
 
-###### Example
+#### Example
 
  * [View on JSFiddle](https://jsfiddle.net/rvikmanis/jzhcrxmz/)
