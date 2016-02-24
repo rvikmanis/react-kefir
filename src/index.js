@@ -1,7 +1,7 @@
 import { Component, createElement } from 'react'
 import { Observable } from 'kefir'
 
-export function createConnector(component) {
+export function Connector(component) {
   return class extends Component {
 
     constructor(...args) {
@@ -64,6 +64,11 @@ export function createConnector(component) {
     }
 
   }
+}
+
+export function createConnector(component) {
+  console.warn("`createConnector(A)` is deprecated; use `Connector(A)`")
+  return Connector(component)
 }
 
 function isObservable(object) {

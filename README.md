@@ -12,26 +12,42 @@ npm install --save react-kefir
 
 ---
 
-### *createConnector(component: [ReactComponent](https://facebook.github.io/react/docs/top-level-api.html)): [ReactComponent](https://facebook.github.io/react/docs/top-level-api.html)*
+### *Connector(component: [ReactComponent](https://facebook.github.io/react/docs/top-level-api.html)): [ReactComponent](https://facebook.github.io/react/docs/top-level-api.html)*
 
-Wraps component with a handler for observable props. Connector keeps track of observables' state, passing current values to the wrapped component.
+This higher-order component automatically subscribes to observable props and keeps the wrapped component updated. That allows us to treat continuous values as effectively discrete.
+
+```js
+import { Connector } from 'react-kefir'
+```
 
 #### Usage
 
+Given a component (`A`),
+
 ```js
-import { sequentially } from 'kefir'
-import { createConnector } from 'react-kefir'
-import { render } from 'react-dom'
-
-function Counter({count, label}) {
-  return <div>{label}: {count}</div>
-}
-
-Counter = createConnector(Counter)
-let observableCount = sequentially(1000, [1,2,3,4,5]).toProperty(() => 0)
-
-render(<Counter label="Count" count={observableCount} />, mountPoint)
+let A = (props) => (<span>{props.v}</span>)
 ```
+
+and an infinite stream of values (`S`),
+
+```js
+let _i = 0
+let S = fromPoll(1000, () => ++_i).toProperty(() => 0)
+```
+
+> ```text
+•---•--->---•---•--->
+0   1  ...  n   n+1
+```  
+
+
+**apply connector, and render:**
+```js
+A = Connector(A)
+render(<A v={S} />, document.body)
+```
+
+Now, sit back and observe the passage of time!
 
 #### Example
 

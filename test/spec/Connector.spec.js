@@ -2,7 +2,7 @@ import Kefir from 'kefir'
 import ReactDOM from 'react-dom'
 import React from 'react'
 
-import { createConnector } from '../../src/index'
+import { Connector } from '../../src/index'
 
 
 describe("Connector", function () {
@@ -30,7 +30,7 @@ describe("Connector", function () {
   }
 
   before(() => {
-    TextLabel = createConnector(TextLabel)
+    TextLabel = Connector(TextLabel)
   })
 
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe("Connector", function () {
 
   it("should handle value updates and prop changes", function (done) {
     this.slow(1000)
-    
+
     let never = Kefir.never()
     mountWithProps({text: never, number: 99})
     expect(getRenderedText()).toBe("99: Foo")
