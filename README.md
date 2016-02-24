@@ -35,7 +35,7 @@ let _i = 0
 let S = fromPoll(1000, () => ++_i).toProperty(() => 0)
 ```
 
-> ```text
+```text
 •---•--->---•---•--->
 0   1  ...  n   n+1
 ```  
