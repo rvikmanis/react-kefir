@@ -1,6 +1,6 @@
 {
   "name": "react-kefir",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Connect Kefir observables to React components",
   "main": "dist/react-kefir.js",
   "jsnext:main": "src/index.js",
